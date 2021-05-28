@@ -70,8 +70,10 @@ schedule.every().hour.do(lambda: predict_price("KRW-BTC"))
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 
+target_price = get_target_price("KRW-BTC", 0.7)
+current_price = get_current_price("KRW-BTC")
 # 시작 메세지 슬랙 전송
-post_message(myToken,"#stock", "autotrade start")
+post_message(myToken,"#stock1", "autotrade start  target : " + str(target_price) + " now : " +str(current_price))
 # 자동매매 시작
 
 while True:
@@ -82,18 +84,18 @@ while True:
         schedule.run_pending()
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-BTC", 0.5)
+            target_price = get_target_price("KRW-BTC", 0.7)
             current_price = get_current_price("KRW-BTC")
             if target_price < current_price and current_price < predicted_close_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
                     buy_result =upbit.buy_market_order("KRW-BTC", krw*0.9995)
-                    post_message(myToken,"#stock1", "BTC buy : " +str(buy_result))
+                    post_message(myToken,"#stock1", "BTC buy : " +str(buy_result) + " now price : " +str(current_price) + "target price : " + str(target_price))
         else:
             btc = get_balance("BTC")
             if btc > 0.00008:
                 sell_result = upbit.sell_market_order("KRW-BTC", btc*0.9995)
-                post_message(myToken,"#stock1", "BTC buy : " +str(sell_result))
+                post_message(myToken,"#stock1", "BTC sell : " +str(sell_result)+ " now price : " +str(current_price)+ "target price : " + str(target_price))
         time.sleep(1)
     except Exception as e:
         print(e)
