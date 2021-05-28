@@ -8,6 +8,7 @@ import requests
 
 
 
+
 access = ""
 secret = ""
 myToken = ""
@@ -69,8 +70,7 @@ schedule.every().hour.do(lambda: predict_price("KRW-BTC"))
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
-
-target_price = get_target_price("KRW-BTC", 0.7)
+target_price = get_target_price("KRW-BTC", 0.5)
 current_price = get_current_price("KRW-BTC")
 # 시작 메세지 슬랙 전송
 post_message(myToken,"#stock1", "autotrade start  target : " + str(target_price) + " now : " +str(current_price))
@@ -84,8 +84,9 @@ while True:
         schedule.run_pending()
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-BTC", 0.7)
+            target_price = get_target_price("KRW-BTC", 0.5)
             current_price = get_current_price("KRW-BTC")
+            
             if target_price < current_price and current_price < predicted_close_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
